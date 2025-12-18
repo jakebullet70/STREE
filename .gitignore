@@ -1,3 +1,5 @@
 *.SYM
-
 LOCAL.BAT
+*.BAK
+*.TMP
+*.OLD
