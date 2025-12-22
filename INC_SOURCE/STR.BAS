@@ -12,21 +12,21 @@
 'CONST cCOUNT = 9
 
 
-FUNCTION strPadL(tmp0$, count) AS STRING
+FUNCTION strPadL(tmp0$, length) AS STRING
     mTMP = LEN(tmp0$)
-	IF mTMP > count THEN
-		strPadL = LEFT$(tmp0$,count)
+	IF mTMP > length THEN
+		strPadL = LEFT$(tmp0$,length)
 	ELSE
-		strPadL = (RPT$(" ",count - mTMP) + tmp0$)
+		strPadL = (RPT$(" ",length - mTMP) + tmp0$)
 	END IF
 END FUNCTION 
 
-FUNCTION strPadR(tmp0$,count) AS STRING
+FUNCTION strPadR(tmp0$,length) AS STRING
     mTMP = LEN(tmp0$)
-	IF mTMP > count THEN
-		strPadR = LEFT$(tmp0$,count)
+	IF mTMP > length THEN
+		strPadR = LEFT$(tmp0$,length)
 	ELSE
-		strPadR = tmp0$ + RPT$(" ",count - mTMP)
+		strPadR = tmp0$ + RPT$(" ",length - mTMP)
 	END IF
 END FUNCTION 
 
