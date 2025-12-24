@@ -44,10 +44,10 @@ END SUB
 SUB PROMPT_QUIT()
     '--- ASK TO QUIT
     MENU_DRAW_CLEAR
-    PrintXY(MnuTopLine+1,0,"Quit The STree Program?   [No]  Yes  ESC Cancel",cCOLOR_WHITE)
-    PrintXY(MnuTopLine+1,27,"N",LINECOLOR)
-    PrintXY(MnuTopLine+1,32,"Y",LINECOLOR)
-    PrintXY(MnuTopLine+1,37,"ESC",LINECOLOR) 
+    PrintXY(MnuTopLine+1,0,"Quit The STree Program?   [No]  Yes  ESC Cancel",TXTCOLOR)
+    PrintXY(MnuTopLine+1,27,"N",HIGHCOLOR)
+    PrintXY(MnuTopLine+1,32,"Y",HIGHCOLOR)
+    PrintXY(MnuTopLine+1,37,"ESC",HIGHCOLOR) 
     DO WHILE true
         GetSingleKey()    
         IF MenuPrompt$ <> "" THEN
