@@ -12,17 +12,18 @@ CONST cMNU_BASE_DIR = 3
 CONST cMNU_BASE_FILE = 4
 
 #INCLUDE "INC_SOURCE\COLORS.BAS"
-DIM MnuTopLine : DIM curMenu   '--- menu vars 
+DIM MnuTopLine : DIM curMenu            '--- menu vars 
+
+DIM i: DIM j                            '--- general purpose loop vars
+DIM tmp0$ : tmp0$ = RPT$(" ",90)        '--- general purpose temp vars
+DIM tmp1$ : tmp1$ = tmp0$ : DIM mTmp    '--- general purpose temp vars    
 
 DIM Key$ : Key$ = " "  '--- key input var 
 DIM KeysCTRL: DIM KeysALT : DIM KeysValid$ 
-DIM MenuPrompt$ : MenuPrompt$ = RPT$(" ",60)  
+DIM MenuPrompt$ : MenuPrompt$ = tmp0$ 
 DIM KeyPressed$ '--- key input vars
 DIM IsDirSelected  '--- selection vars - files / directories
 IsDirSelected = true
-
-DIM i: DIM j  '--- general purpose loop vars
-DIM tmp0$ : DIM tmp1$ : DIM mTmp  '--- general purpose temp vars    
 
 CONST cMAX_FILE = 249
 CONST cMAX_DIR = 99
@@ -40,7 +41,6 @@ PRINT "Starting ... "
 ReadDIR() : ReadFiles() 
 MnuTopLine = CurRows - 3
 DrawBaseScreen()
-
 
 
 '--- drop into the keyloop
@@ -78,7 +78,7 @@ KeyLoop:
     IF key$ <> "" THEN
         KeyPressed$ = UCASE$(key$)  
         IF INSTR(1, KeysValid$, KeyPressed$) THEN
-            if curMenu = cMNU_CTRL THEN
+            IF curMenu = cMNU_CTRL THEN
                 KEYS_CTRL_PROCESS()
             ELSEIF curMenu = cMNU_ALT THEN      
                 KEYS_ALT_PROCESS()
@@ -105,7 +105,8 @@ END
 SUB DrawBaseScreen()
     CLS
     DIM LINECOLOR: DIM TXTCOLOR : '--- color vars
-    LINECOLOR = cCOLOR_CYAN : TXTCOLOR = cCOLOR_WHITE
+    DIM HIGHCOLOR
+    LINECOLOR = cCOLOR_CYAN : TXTCOLOR = cCOLOR_WHITE : HIGHCOLOR = LINECOLOR
     COLOR(cCOLOR_CYAN,cCOLOR_BLUE)
     PrintXY(0, 0,  "STREE V0.1.0", LINECOLOR)   
     PrintXY(0, 60, strPadR("12/11/2025  8:34 PM",20), LINECOLOR)  '--- date/time placeholder TODO`
