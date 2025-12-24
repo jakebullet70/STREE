@@ -30,47 +30,49 @@ SUB MENU_DRAW_CLEAR()
     'for j = MnuTopLine to (MnuTopLine + 2) '--- FAILS
     'for j = 57 to 59 '-- WORKS
     POKE 903,65	 : '--- CHANGES THE ROW SIZE SO THE LAST CHAR DOES NOT SCROLL THE SCREEN
+    tmp0$ = RPT$(" ",80)
     FOR j = 57 TO 59
-        LOCATE j,0 : PRINT RPT$(" ",80);
+        LOCATE j,0 : PRINT tmp0$;
     NEXT 
     POKE 903,CurRows	 : '--- RESTORE THE ROW SIZE
 END SUB
 
-
 SUB MENU_DRAW_CTRL()
     curMenu = cMNU_CTRL
     MENU_DRAW_CLEAR
-    PrintXY(MnuTopLine  ,0,"CTRL DIR",cCOLOR_WHITE)
-    PrintXY(MnuTopLine+1,0,"COMMANDS",cCOLOR_WHITE)
+    PrintXY(MnuTopLine  ,0,"CTRL DIR",TXTCOLOR)
+    PrintXY(MnuTopLine+1,0,"COMMANDS",TXTCOLOR)
     KeysValid$ = ""
 END SUB
 
 SUB MENU_DRAW_BASE_FILE()
     curMenu = cMNU_BASE_FILE
     MENU_DRAW_CLEAR
-    PrintXY(MnuTopLine  ,0,"FILE",cCOLOR_WHITE)
-    PrintXY(MnuTopLine+1,0,"COMMANDS",cCOLOR_WHITE)
+    PrintXY(MnuTopLine  ,0,"FILE",TXTCOLOR)
+    PrintXY(MnuTopLine+1,0,"COMMANDS",TXTCOLOR)
     KeysValid$ = ""
 END SUB
 
 SUB MENU_DRAW_BASE_DIR()
     curMenu = cMNU_BASE_DIR
     MENU_DRAW_CLEAR
-    PrintXY(MnuTopLine  ,0 ,"DIR",cCOLOR_WHITE)
-    PrintXY(MnuTopLine+1,0 ,"COMMANDS",cCOLOR_WHITE)
-    PrintXY(MnuTopLine,10,"Avail  Del  Rename  Quit",cCOLOR_WHITE)
-    PrintXY(MnuTopLine,10,"A",LINECOLOR)
-    PrintXY(MnuTopLine,17,"D",LINECOLOR)
-    PrintXY(MnuTopLine,22,"R",LINECOLOR)
-    PrintXY(MnuTopLine,30,"Q",LINECOLOR)
-    KeysValid$ = "ADRQ"
+    PrintXY(MnuTopLine  ,0 ,"DIR",TXTCOLOR)
+    PrintXY(MnuTopLine+1,0 ,"COMMANDS",TXTCOLOR)
+    PrintXY(MnuTopLine,10,"Avail  Del  Rename  Log  Make  Quit",TXTCOLOR)
+    PrintXY(MnuTopLine,10,"A",HIGHCOLOR)
+    PrintXY(MnuTopLine,17,"D",HIGHCOLOR)
+    PrintXY(MnuTopLine,22,"R",HIGHCOLOR)
+    PrintXY(MnuTopLine,30,"L",HIGHCOLOR)
+    PrintXY(MnuTopLine,35,"M",HIGHCOLOR)
+    PrintXY(MnuTopLine,41,"Q",HIGHCOLOR)
+    KeysValid$ = "ADRLMQ"
 END SUB
 
 SUB MENU_DRAW_ALT()
     curMenu = cMNU_ALT
     MENU_DRAW_CLEAR
-    PrintXY(MnuTopLine  ,0,"ALT DIR",cCOLOR_WHITE)
-    PrintXY(MnuTopLine+1,0,"COMMANDS",cCOLOR_WHITE)           
+    PrintXY(MnuTopLine  ,0,"ALT DIR",TXTCOLOR)
+    PrintXY(MnuTopLine+1,0,"COMMANDS",TXTCOLOR)           
     KeysValid$ = ""
 END SUB
 
@@ -120,30 +122,4 @@ SUB PrintXY(row2,col2,tmp0$,clr2)
     LOCATE row2,col2 : ' row, col
     COLOR clr2 : PRINT tmp0$;
 END SUB
-
-
-
-
-' Keyboard scancode diagram for Commander X16
-'
-'
-'
-' I've been following the progress of a pretty significant change to how keyboard scancodes are going to work, and saw that the pull request just got merged. I thought it would be pretty helpful to have a diagram of it (and needed something fun to do), so here it is:
-' ,---,   ,---,---,---,---, ,---,---,---,---, ,---,---,---,---, ,---,---,---,
-' | 6E| 6F| 70| 71| 72| 73| | 74| 75| 76| 77| | 78| 79| 7A| 7B| | 7C| 7D| 7E|   o     o     o
-' '---'   '---'---'---'---' '---'---'---'---' '---'---'---'---' '---'---'---'
-' ,---,---,---,---,---,---,---,---,---,---,---,---,---,-------, ,---,---,---, ,---,---,---,---,
-' | 01| 02| 03| 04| 05| 06| 07| 08| 09| 0A| 0B| 0C| 0D|!0E->0F| | 4B| 50| 55| | 5A| 5F| 64| 69|
-' ;---'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-----; ;---;---;---; ;---;---;---;---;
-' | 10  | 11| 12| 13| 14| 15| 16| 17| 18| 19| 1A| 1B| 1C|   1D| | 4C| 51| 56| | 5B| 60| 65| 6A|
-' ;-----',--',--',--',--',--',--',--',--',--',--',--',--'-----; '---'---'---' ;---;---;---;   |
-' | 1E   | 1F| 20| 21| 22| 23| 24| 25| 26| 27| 28| 29|!2A-->2B|   4D  52  57  | 5C| 61| 66|!6B|
-' ;------'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'--------;     ,---,     ;---;---;---;---;
-' | 2C<-!2D| 2E| 2F| 30| 31| 32| 33| 34| 35| 36| 37|!38---->39|   4E| 53| 58  | 5D| 62| 67| 6C|
-' ;----,---',--'-,-'---'---'---'---'---'---'---',--'-,----,---; ,---;---;---, ;---'---;---;   |
-' | 3A | 3B | 3C |              3D              | 3E | 3F | 40| | 4F| 54| 59| |!5E->63| 68|!6D|
-' '----'----'----'------------------------------'----'----'---' '---'---'---' '-------'---'---'
-' !XX--->YY means, the position of XX is not used and the key actually triggers YY.
-' Between right ctrl and insert, the position numbers skip enough to add 2 extra columns of keys.
-
 
