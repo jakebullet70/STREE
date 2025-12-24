@@ -24,14 +24,14 @@ DIM dir$(99) : DIM files$(249) '--- file and directory arrays
 
 
 '--------------------------- START -----------------------------
-SCREEN 0 '--- text mode 80COL  TODO: save old screen mode and restore on exit
-CurRows = GETROWS() : CurCols = GETCOLS()    
-ENTERISO : SETCHARSET 7
+EnvSave()
 PRINT "STREE - File and Directory Viewer for Commander X16 - V0.1.0"
 PRINT "Starting ... "
 ReadDIR : ReadFiles 
 MnuTopLine = GETROWS() - 3
 DrawBaseScreen
+
+
 
 '--- drop into the keyloop
 
@@ -63,7 +63,8 @@ KeyLoop:
 
 if key$ = "" then GOTO KeyLoop
 
-EXITISO : END
+EnvRestore()
+END
 
 
 
@@ -86,6 +87,22 @@ END SUB
 
 SUB ReadFiles()
 END SUB
+
+
+SUB EnvSave()
+    '--- save environment variables here
+    EnvScrnMode = CURSCREENMODE
+    EnvCharSet  = PEEK($372)        '--- CHARSET 
+    SCREEN 0                        '--- text mode 80COL 
+    ENTERISO : SETCHARSET 7
+    CurRows = GETROWS() : CurCols = GETCOLS()  
+END SUB 
+SUB EnvRestore()
+    '--- restore environment variables
+    EXITISO
+    SCREEN EnvScrnMode
+    SETCHARSET EnvCharSet
+END SUB 
 
 
 
