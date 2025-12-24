@@ -40,22 +40,38 @@ END SUB
 SUB MENU_DRAW_CTRL()
     curMenu = cMNU_CTRL
     MENU_DRAW_CLEAR
-    locate MnuTopLine + 1, 0
-    PRINT "CTRL key is pressed                 ";    
+    PrintXY(MnuTopLine  ,0,"CTRL DIR",cCOLOR_WHITE)
+    PrintXY(MnuTopLine+1,0,"COMMANDS",cCOLOR_WHITE)
+    KeysValid$ = ""
 END SUB
 
-SUB MENU_DRAW_BASE()
-    curMenu = cMNU_BASE
+SUB MENU_DRAW_BASE_FILE()
+    curMenu = cMNU_BASE_FILE
     MENU_DRAW_CLEAR
-    locate MnuTopLine + 1, 0
-    PRINT "Main Menu (no modifier key pressed)";  
+    PrintXY(MnuTopLine  ,0,"FILE",cCOLOR_WHITE)
+    PrintXY(MnuTopLine+1,0,"COMMANDS",cCOLOR_WHITE)
+    KeysValid$ = ""
+END SUB
+
+SUB MENU_DRAW_BASE_DIR()
+    curMenu = cMNU_BASE_DIR
+    MENU_DRAW_CLEAR
+    PrintXY(MnuTopLine  ,0 ,"DIR",cCOLOR_WHITE)
+    PrintXY(MnuTopLine+1,0 ,"COMMANDS",cCOLOR_WHITE)
+    PrintXY(MnuTopLine,10,"Avail  Del  Rename  Quit",cCOLOR_WHITE)
+    PrintXY(MnuTopLine,10,"A",LINECOLOR)
+    PrintXY(MnuTopLine,17,"D",LINECOLOR)
+    PrintXY(MnuTopLine,22,"R",LINECOLOR)
+    PrintXY(MnuTopLine,30,"Q",LINECOLOR)
+    KeysValid$ = "ADRQ"
 END SUB
 
 SUB MENU_DRAW_ALT()
     curMenu = cMNU_ALT
     MENU_DRAW_CLEAR
-    locate MnuTopLine + 1, 0
-    PRINT "ALT key is pressed                  ";     
+    PrintXY(MnuTopLine  ,0,"ALT DIR",cCOLOR_WHITE)
+    PrintXY(MnuTopLine+1,0,"COMMANDS",cCOLOR_WHITE)           
+    KeysValid$ = ""
 END SUB
 
 
