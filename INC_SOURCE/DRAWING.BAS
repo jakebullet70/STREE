@@ -15,6 +15,8 @@
 ' CONST BOTTOMRIGHT = 125  ' Bottom-Right
 ' CONST HORIZONTAL  = 64   ' Horizontal
 ' CONST VERTICAL  = 93   ' Vertical
+
+'--- ISO CHARSET CODES for box drawing CP437  (DOS)
 CONST TOPLEFT = 218  ' Top-Left
 CONST TOPRIGHT = 191  ' Top-Right
 CONST BOTTOMLEFT = 192  ' Bottom-Left
@@ -23,8 +25,43 @@ CONST HORIZONTAL  = 196  ' Horizontal
 CONST VERTICAL  = 179   ' Vertical
 CONST INTERSECT = 197   ' Intersection
 
+
+SUB MENU_DRAW_CLEAR()
+    'for j = MnuTopLine to (MnuTopLine + 2) '--- FAILS
+    'for j = 57 to 59 '-- WORKS
+    POKE 903,65	 : '--- CHANGES THE ROW SIZE SO THE LAST CHAR DOES NOT SCROLL THE SCREEN
+    FOR j = 57 TO 59
+        LOCATE j,0 : PRINT RPT$(" ",80);
+    NEXT 
+    POKE 903,CurRows	 : '--- RESTORE THE ROW SIZE
+END SUB
+
+
+SUB MENU_DRAW_CTRL()
+    curMenu = cMNU_CTRL
+    MENU_DRAW_CLEAR
+    locate MnuTopLine + 1, 0
+    PRINT "CTRL key is pressed                 ";    
+END SUB
+
+SUB MENU_DRAW_BASE()
+    curMenu = cMNU_BASE
+    MENU_DRAW_CLEAR
+    locate MnuTopLine + 1, 0
+    PRINT "Main Menu (no modifier key pressed)";  
+END SUB
+
+SUB MENU_DRAW_ALT()
+    curMenu = cMNU_ALT
+    MENU_DRAW_CLEAR
+    locate MnuTopLine + 1, 0
+    PRINT "ALT key is pressed                  ";     
+END SUB
+
+
+'===================================================================================
+
 SUB BOX(x,y,w,h,clr) 
-    DIM i
     
     '--- draw horizontals
     LINE_HORIZONTAL(x, y, w, clr)
@@ -35,19 +72,17 @@ SUB BOX(x,y,w,h,clr)
     LINE_VERTICAL(x, y+w, h , clr)
 
     '--- draw corners
-    PrintXY(x, y, TOPLEFT, clr)
-    PrintXY(x, y+w-1, TOPRIGHT, clr)
-    PrintXY(x+h-1, y, BOTTOMLEFT, clr)
-    PrintXY(x+h-1, y+w-1, BOTTOMRIGHT, clr)
+    PlotXY(x, y, TOPLEFT, clr)
+    PlotXY(x, y+w, TOPRIGHT, clr)
+    PlotXY(x+h-1, y, BOTTOMLEFT, clr)
+    PlotXY(x+h-1, y+w, BOTTOMRIGHT, clr)
     
 END SUB
 
 
 SUB LINE_VERTICAL(x0, y0, length, clr0)  
-    DIM i
     FOR i = 0 TO length - 1
         PlotXY(x0 + i, y0, VERTICAL, clr0)
-        'LOCATE x+i,y : PRINT chr$(VERTICAL);
     NEXT i
 END SUB 
 SUB LINE_HORIZONTAL(x0, y0, length, clr0)
@@ -55,17 +90,13 @@ SUB LINE_HORIZONTAL(x0, y0, length, clr0)
 END SUB
 
 
-
-
-
-
 ' TODO needs to be made into ASM for speed - Andy!
 ' TODO needs to be made into ASM for speed - Andy!
 
 '--- plot a single character at x,y by ascii value with color
-SUB PlotXY(row1,row2,s1,clr1) 
+SUB PlotXY(row1,col1,s1,clr1) 
     ' TODO needs to be made into ASM for speed - Andy!  TODO  0,0 BASED
-    PrintXY(row1,row2,CHR$(s1),clr1)
+    PrintXY(row1,col1,CHR$(s1),clr1)
 END SUB
 '--- print a string at x,y with color
 SUB PrintXY(row2,col2,tmp0$,clr2)
@@ -73,13 +104,14 @@ SUB PrintXY(row2,col2,tmp0$,clr2)
     LOCATE row2,col2 : ' row, col
     COLOR clr2 : PRINT tmp0$;
 END SUB
-    
 
 
 
 
-
-
+' Keyboard scancode diagram for Commander X16
+'
+'
+'
 ' I've been following the progress of a pretty significant change to how keyboard scancodes are going to work, and saw that the pull request just got merged. I thought it would be pretty helpful to have a diagram of it (and needed something fun to do), so here it is:
 ' ,---,   ,---,---,---,---, ,---,---,---,---, ,---,---,---,---, ,---,---,---,
 ' | 6E| 6F| 70| 71| 72| 73| | 74| 75| 76| 77| | 78| 79| 7A| 7B| | 7C| 7D| 7E|   o     o     o
