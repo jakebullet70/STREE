@@ -14,15 +14,22 @@ CONST cMNU_BASE_FILE = 4
 #INCLUDE "INC_SOURCE\COLORS.BAS"
 DIM MnuTopLine : DIM curMenu   '--- menu vars 
 
-DIM Key$ : DIM KeysCTRL: DIM KeysALT : DIM KeysValid$ : DIM KeyPressed$ '--- key input vars
+DIM Key$ : Key$ = " "  '--- key input var 
+DIM KeysCTRL: DIM KeysALT : DIM KeysValid$ 
+DIM MenuPrompt$ : MenuPrompt$ = RPT$(" ",60)  
+DIM KeyPressed$ '--- key input vars
 DIM IsDirSelected  '--- selection vars - files / directories
 IsDirSelected = true
 
 DIM i: DIM j  '--- general purpose loop vars
 DIM tmp0$ : DIM tmp1$ : DIM mTmp  '--- general purpose temp vars    
 
+CONST cMAX_FILE = 249
+CONST cMAX_DIR = 99
+CONST cMAX_PATH_LEN = 96
 DIM cntDirs : DIM cntFiles  '--- file/directory vars
-DIM dir$(99) : DIM files$(249) '--- file and directory arrays
+DIM dir$(cMAX_DIR) : DIM files$(cMAX_FILE) '--- file and directory arrays
+InitArrays()    
 '--- NxtBasic has 80k of string memory for dynamic allocation
 
 
@@ -30,9 +37,9 @@ DIM dir$(99) : DIM files$(249) '--- file and directory arrays
 EnvSave()
 PRINT "STREE - File and Directory Viewer for Commander X16 - V0.1.0"
 PRINT "Starting ... "
-ReadDIR : ReadFiles 
+ReadDIR() : ReadFiles() 
 MnuTopLine = CurRows - 3
-DrawBaseScreen
+DrawBaseScreen()
 
 
 
@@ -116,6 +123,16 @@ END SUB
 SUB ReadFiles()
 END SUB
 
+SUB InitArrays()
+    tmp0$ = RPT$(" ",cMAX_PATH_LEN)
+    FOR i = 0 to cMAX_DIR
+        dir$(i) = tmp0$
+    NEXT i  
+    FOR i = 0 to cMAX_FILE
+        files$(i) = tmp0$
+    NEXT i
+    cntDirs = 0 : cntFiles = 0
+END SUB
 
 SUB EnvSave() 
    '--- save environment variables here
