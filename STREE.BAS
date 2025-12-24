@@ -62,16 +62,14 @@ KeyLoop:
       END IF
     END IF
     
-    IF  KeysCTRL = false THEN
-        IF KeysALT = false THEN
-            IF IsDirSelected THEN
-                IF curMenu <> cMNU_BASE_DIR THEN
-                    MENU_DRAW_BASE_DIR()
-                END IF
-            ELSE
-                IF curMenu <> cMNU_BASE_FILE THEN
-                    MENU_DRAW_BASE_FILE()
-                END IF
+    IF  KeysCTRL = false AND KeysALT = false THEN
+        IF IsDirSelected THEN
+            IF curMenu <> cMNU_BASE_DIR THEN
+                MENU_DRAW_BASE_DIR()
+            END IF
+        ELSE
+            IF curMenu <> cMNU_BASE_FILE THEN
+                MENU_DRAW_BASE_FILE()
             END IF
         END IF
     END IF
