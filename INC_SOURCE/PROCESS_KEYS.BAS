@@ -27,6 +27,7 @@ SUB KEYS_DIR_PROCESS()
     ELSEIF KeyPressed$ = "Q" THEN
         PROMPT_QUIT
     END IF
+    MENU_DRAW_BASE_DIR()
 END SUB
 
 
@@ -41,10 +42,41 @@ SUB PROMPT_DELETE_DIR()
 END SUB
 SUB PROMPT_AVAILABLE_SPACE()
 END SUB
+
 SUB PROMPT_QUIT()
     '--- ASK TO QUIT
-    GOTO OutOfHere
+    MENU_DRAW_CLEAR
+    PrintXY(MnuTopLine+1,0,"Quit The STree Program?   [No]  Yes  ESC Cancel",cCOLOR_WHITE)
+    PrintXY(MnuTopLine+1,27,"N",LINECOLOR)
+    PrintXY(MnuTopLine+1,32,"Y",LINECOLOR)
+    PrintXY(MnuTopLine+1,37,"ESC",LINECOLOR) 
+    DO WHILE true
+        GetSingleKey()    
+        IF MenuPrompt$ <> "" THEN
+            IF MenuPrompt$ = "Y" THEN
+                GOTO OutOfHere
+            ELSEIF MenuPrompt$ = "N" OR ASC(MenuPrompt$) = 27 OR ASC(MenuPrompt$) = 13 THEN
+                EXIT LOOP
+            END IF
+        END IF
+    LOOP              
 END SUB
+
+
+SUB GetSingleKey()
+    '--- RETURNS THE PRESSED KEY IN MenuPrompt$
+    DO While true
+        MenuPrompt$ = Get
+        IF MenuPrompt$ <> "" THEN 
+            MenuPrompt$ = UCASE$(MenuPrompt$)
+            EXIT LOOP
+        END IF
+        SLEEP 10
+    LOOP
+END SUB
+
+
+
 
 
 
