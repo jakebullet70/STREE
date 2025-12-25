@@ -31,10 +31,10 @@ FUNCTION strPadR(tmp0$,length) AS STRING
 END FUNCTION 
 
 
-' FUNCTION strCenterString(tmp0$ AS STRING, xWidth AS INT) AS STRING
-	' mTMP = (xWidth - LEN(tmp0$)) / 2
-	' strCenterString = (RPT$(" ",mTMP) + tmp0$ + RPT$(" ",mTMP))                                                        
-' END FUNCTION  
+SUB strPrintCenter(tmp0$, length)
+	SETCOL length/2 - LEN(tmp0$)/2
+	PRINT tmp0$
+END SUB
 
 
 ' FUNCTION strBoolToStr(bool AS int) AS INT
