@@ -135,6 +135,7 @@ END SUB
 
 SUB EnvSave() 
    '--- save environment variables here
+   ' TODO : nee to save current txt  bg color
     DIM EnvScrnMode : DIM EnvCharSet
     DIM CurRows : DIM CurCols
     EnvScrnMode = CURSCREENMODE
