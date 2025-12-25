@@ -18,18 +18,17 @@ DIM i: DIM j                            '--- general purpose loop vars
 DIM tmp0$ : tmp0$ = RPT$(" ",90)        '--- general purpose temp vars
 DIM tmp1$ : tmp1$ = tmp0$ : DIM mTmp    '--- general purpose temp vars    
 
-DIM Key$ : Key$ = " "  '--- key input var 
+DIM Key$ : Key$ = " "                   '--- key input var 
 DIM KeysCTRL: DIM KeysALT : DIM KeysValid$ 
-DIM MenuPrompt$ : MenuPrompt$ = tmp0$ 
-DIM KeyPressed$ '--- key input vars
-DIM IsDirSelected  '--- selection vars - files / directories
+DIM MenuPrompt$ : MenuPrompt$ = tmp0$       '--- menu prompt key input var
+DIM IsDirSelected                           '--- selection vars - files / directories
 IsDirSelected = true
 
 CONST cMAX_FILE = 249
 CONST cMAX_DIR = 99
 CONST cMAX_PATH_LEN = 96
-DIM cntDirs : DIM cntFiles  '--- file/directory vars
-DIM dir$(cMAX_DIR) : DIM files$(cMAX_FILE) '--- file and directory arrays
+DIM cntDirs : DIM cntFiles                  '--- file/directory vars
+DIM dir$(cMAX_DIR) : DIM files$(cMAX_FILE)  '--- file and directory arrays
 InitArrays()    
 '--- NxtBasic has 80k of string memory for dynamic allocation
 
@@ -76,8 +75,8 @@ KeyLoop:
     SLEEP 10
 
     IF key$ <> "" THEN
-        KeyPressed$ = UCASE$(key$)  
-        IF INSTR(1, KeysValid$, KeyPressed$) THEN
+        Key$ = UCASE$(key$)  
+        IF INSTR(1, KeysValid$, Key$) THEN
             IF curMenu = cMNU_CTRL THEN
                 KEYS_CTRL_PROCESS()
             ELSEIF curMenu = cMNU_ALT THEN      
@@ -135,7 +134,7 @@ END SUB
 
 SUB EnvSave() 
    '--- save environment variables here
-   ' TODO : nee to save current txt  bg color
+   ' TODO : need to save current txt  bg color
     DIM EnvScrnMode : DIM EnvCharSet
     DIM CurRows : DIM CurCols
     EnvScrnMode = CURSCREENMODE
@@ -156,3 +155,4 @@ END SUB
 #INCLUDE "INC_SOURCE\DRAWING.BAS"
 #INCLUDE "INC_SOURCE\PROCESS_KEYS.BAS"
 #INCLUDE "INC_SOURCE\STR.BAS"
+#INCLUDE "INC_SOURCE\DOS.BAS"
