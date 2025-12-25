@@ -6,7 +6,8 @@
 ' sadLogic / Steve De George SR. / Steve De George JR
 ' Compile with nxtBasic: https://github.com/unartic/nxtBasic   Windows - CRLF
 '-----------------------------------------------------------------------------------
-
+CONST cKEY_ESC = 27
+CONST cKEY_ENTER = 13
 
 SUB KEYS_ALT_PROCESS()
 END SUB
@@ -16,13 +17,13 @@ END SUB
 
 
 SUB KEYS_DIR_PROCESS()
-    IF KeyPressed$ = "A" THEN
+    IF Key$ = "A" THEN
         '--- show available space
-    ELSEIF KeyPressed$ = "D" THEN
+    ELSEIF Key$ = "D" THEN
         '--- delete directory
-    ELSEIF KeyPressed$ = "R" THEN
+    ELSEIF Key$ = "R" THEN
         '--- rename directory
-    ELSEIF KeyPressed$ = "Q" THEN
+    ELSEIF Key$ = "Q" THEN
         PROMPT_QUIT
     END IF
     MENU_DRAW_BASE_DIR()
@@ -50,18 +51,16 @@ SUB PROMPT_QUIT()
     PrintXY(MnuTopLine+1,37,"ESC",HIGHCOLOR) 
     DO WHILE true
         GetSingleKey()    
-        IF MenuPrompt$ <> "" THEN
-            IF MenuPrompt$ = "Y" THEN
-                GOTO OutOfHere
-            ELSEIF MenuPrompt$ = "N" OR ASC(MenuPrompt$) = 27 OR ASC(MenuPrompt$) = 13 THEN
-                EXIT LOOP
-            END IF
+        IF MenuPrompt$ = "Y" THEN
+            GOTO OutOfHere
+        ELSEIF MenuPrompt$ = "N" OR ASC(MenuPrompt$) = cKEY_ESC OR ASC(MenuPrompt$) = cKEY_ENTER THEN
+            EXIT LOOP
         END IF
     LOOP              
 END SUB
 
 
-SUB GetSingleKey()
+SUB GetSingleKey() 
     '--- RETURNS THE PRESSED KEY IN MenuPrompt$
     DO While true
         MenuPrompt$ = Get
@@ -72,8 +71,6 @@ SUB GetSingleKey()
         SLEEP 10
     LOOP
 END SUB
-
-
 
 
 
