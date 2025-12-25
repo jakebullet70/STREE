@@ -3,3 +3,4 @@ LOCAL.BAT
 *.BAK
 *.TMP
 *.OLD
+/sdcard
