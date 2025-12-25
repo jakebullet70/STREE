@@ -9,37 +9,44 @@
 CONST cKEY_ESC = 27
 CONST cKEY_ENTER = 13
 
-SUB KEYS_ALT_PROCESS()
-END SUB
 
-SUB KEYS_CTRL_PROCESS()
-END SUB
-
+'===========================  PROCESS - PROMPTS DIR  ============================
 
 SUB KEYS_DIR_PROCESS()
-    IF Key$ = "A" THEN
-        '--- show available space
-    ELSEIF Key$ = "D" THEN
-        '--- delete directory
-    ELSEIF Key$ = "R" THEN
-        '--- rename directory
-    ELSEIF Key$ = "Q" THEN
+    IF     Key$ = "A" THEN  
+        PROMPT_SHOW_AVAILABLE_SPACE
+    ELSEIF Key$ = "D" THEN  
+        PROMPT_DELETE_DIR
+    ELSEIF Key$ = "R" THEN  
+        PROMPT_RENAME_DIR
+    ELSEIF Key$ = "Q" THEN  
         PROMPT_QUIT
+    ELSEIF Key$ = "R" THEN 
+        ' RENAME DIR
+    ELSEIF Key$ = "L" THEN 
+        'LOG DISK
+    ELSEIF Key$ = "M" THEN 
+        'MAKE DIR
     END IF
     MENU_DRAW_BASE_DIR()
 END SUB
 
 
-SUB KEYS_FILE_PROCESS()
-END SUB
-
-
-'=================  PROMPTS  =======================
 SUB PROMPT_RENAME_DIR()
+    MENU_DRAW_CLEAR
+    PrintXY(MnuTopLine  ,0 ,"RENAME sub-directory:",TXTCOLOR)
+    PrintXY(MnuTopLine+1,18,"to:",TXTCOLOR)
+    PrintXY(MnuTopLine+2, 0,"Enter new name         TAB Change case  UP History  CR Ok  ESC Cancel",TXTCOLOR)
+    'PrintXY(MnuTopLine+1,32,"Y",HIGHCOLOR)
+    'PrintXY(MnuTopLine+1,37,"ESC",HIGHCOLOR) 
+    GetSingleKey() 
 END SUB
+
 SUB PROMPT_DELETE_DIR()
+    '--- ASK TO DELETE, if files, tell of ALT PRUNE command
 END SUB
-SUB PROMPT_AVAILABLE_SPACE()
+
+SUB PROMPT_SHOW_AVAILABLE_SPACE()
 END SUB
 
 SUB PROMPT_QUIT()
@@ -60,6 +67,29 @@ SUB PROMPT_QUIT()
 END SUB
 
 
+
+
+'===================================  PROCESS - PROMPTS FILE  ============================
+SUB KEYS_FILE_PROCESS()
+END SUB
+
+
+'===================================  PROCESS - PROMPTS CTRL  ============================
+SUB KEYS_CTRL_PROCESS()
+END SUB
+
+
+'===================================  PROCESS - PROMPTS ALT  ============================
+SUB KEYS_ALT_PROCESS()
+END SUB
+
+
+
+'==============================================================================
+'==============================================================================
+'==============================================================================
+
+'======================= generic methods for handling key input ==========================
 SUB GetSingleKey() 
     '--- RETURNS THE PRESSED KEY IN MenuPrompt$
     DO While true
