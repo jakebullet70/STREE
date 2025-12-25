@@ -25,11 +25,10 @@ DIM IsDirSelected                           '--- selection vars - files / direct
 IsDirSelected = true
 
 CONST cMAX_FILE = 249
-CONST cMAX_DIR = 99
+CONST cMAX_DIR = 74
 CONST cMAX_PATH_LEN = 96
 DIM cntDirs : DIM cntFiles                  '--- file/directory vars
-DIM dir$(cMAX_DIR) : DIM files$(cMAX_FILE)  '--- file and directory arrays
-InitArrays()    
+DIM dir$(cMAX_DIR) : DIM files$(cMAX_FILE)  '--- file and directory arrays   
 '--- NxtBasic has 80k of string memory for dynamic allocation
 
 
@@ -37,6 +36,7 @@ InitArrays()
 EnvSave()
 PRINT "STREE - File and Directory Viewer for Commander X16 - V0.1.0"
 PRINT "Starting ... "
+InitArrays() 
 ReadDIR() : ReadFiles() 
 MnuTopLine = CurRows - 3
 DrawBaseScreen()
@@ -76,7 +76,8 @@ KeyLoop:
 
     IF key$ <> "" THEN
         Key$ = UCASE$(key$)  
-        IF INSTR(1, KeysValid$, Key$) THEN
+        '--- KeysValid$ holds valid keys for the current menu
+        IF INSTR(1, KeysValid$, Key$) THEN 
             IF curMenu = cMNU_CTRL THEN
                 KEYS_CTRL_PROCESS()
             ELSEIF curMenu = cMNU_ALT THEN      
