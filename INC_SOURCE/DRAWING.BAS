@@ -16,15 +16,18 @@
 ' CONST HORIZONTAL  = 64   ' Horizontal
 ' CONST VERTICAL  = 93   ' Vertical
 
-'--- ISO CHARSET CODES for box drawing CP437  (DOS)
-CONST TOPLEFT = 218  ' Top-Left
-CONST TOPRIGHT = 191  ' Top-Right
-CONST BOTTOMLEFT = 192  ' Bottom-Left
-CONST BOTTOMRIGHT = 217  ' Bottom-Right
-CONST HORIZONTAL  = 196  ' Horizontal
-CONST VERTICAL  = 179   ' Vertical
-CONST INTERSECT = 197   ' Intersection
-
+'--- ISO CHARSET CODES for Box drawing CP437  (DOS)
+CONST cTOPLEFT = 218  ' Top-Left
+CONST cTOPRIGHT = 191  ' Top-Right
+CONST cBOTTOMLEFT = 192  ' Bottom-Left
+CONST cBOTTOMRIGHT = 217  ' Bottom-Right
+CONST cHORIZONTAL  = 196  ' Horizontal
+CONST cVERTICAL  = 179   ' Vertical
+CONST cINTERSECT = 197   ' Intersection
+CONST cTDOWN = 194      ' T Down
+CONST cTUP = 193        ' T Up   
+CONST cSIDE_LEFT = 195    ' T Right
+CONST cSIDE_RIGHT = 180   ' T Left   
 
 SUB MENU_DRAW_CLEAR()
     'for j = MnuTopLine to (MnuTopLine + 2) '--- FAILS
@@ -34,7 +37,7 @@ SUB MENU_DRAW_CLEAR()
     FOR j = 57 TO 59
         LOCATE j,0 : PRINT tmp0$;
     NEXT 
-    POKE 903,CurRows	 : '--- RESTORE THE ROW SIZE
+    POKE 903,GETROWS()	 : '--- RESTORE THE ROW SIZE
 END SUB
 
 SUB MENU_DRAW_CTRL()
@@ -79,7 +82,7 @@ END SUB
 
 '===================================================================================
 
-SUB BOX(x,y,w,h,clr) 
+SUB Box(x,y,w,h,clr) 
     
     '--- draw horizontals
     LINE_HORIZONTAL(x, y, w, clr)
@@ -90,21 +93,21 @@ SUB BOX(x,y,w,h,clr)
     LINE_VERTICAL(x, y+w, h , clr)
 
     '--- draw corners
-    PlotXY(x, y, TOPLEFT, clr)
-    PlotXY(x, y+w, TOPRIGHT, clr)
-    PlotXY(x+h-1, y, BOTTOMLEFT, clr)
-    PlotXY(x+h-1, y+w, BOTTOMRIGHT, clr)
+    PlotXY(x, y, cTOPLEFT, clr)
+    PlotXY(x, y+w, cTOPRIGHT, clr)
+    PlotXY(x+h-1, y, cBOTTOMLEFT, clr)
+    PlotXY(x+h-1, y+w, cBOTTOMRIGHT, clr)
     
 END SUB
 
 
 SUB LINE_VERTICAL(x0, y0, length, clr0)  
     FOR i = 0 TO length - 1
-        PlotXY(x0 + i, y0, VERTICAL, clr0)
+        PlotXY(x0 + i, y0, cVERTICAL, clr0)
     NEXT i
 END SUB 
 SUB LINE_HORIZONTAL(x0, y0, length, clr0)
-    PrintXY(x0, y0, RPT$(CHR$(HORIZONTAL), length), clr0)
+    PrintXY(x0, y0, RPT$(CHR$(cHORIZONTAL), length), clr0)
 END SUB
 
 
