@@ -25,10 +25,11 @@ DIM IsDirSelected                           '--- selection vars - files / direct
 IsDirSelected = true
 
 CONST cMAX_FILE = 249
-CONST cMAX_DIR = 74
+CONST cMAX_DIR = 59
 CONST cMAX_PATH_LEN = 96
 DIM cntDirs : DIM cntFiles                  '--- file/directory vars
-DIM dir$(cMAX_DIR) : DIM files$(cMAX_FILE)  '--- file and directory arrays   
+DIM dir$(cMAX_DIR) : DIM files$(cMAX_FILE)
+DIM files_tagged$(cMAX_FILE)  '--- file and directory arrays   
 '--- NxtBasic has 80k of string memory for dynamic allocation
 
 
@@ -38,7 +39,7 @@ PRINT "STREE - File and Directory Viewer for Commander X16 - V0.1.0"
 PRINT "Starting ... "
 InitArrays() 
 ReadDIR() : ReadFiles() 
-MnuTopLine = CurRows - 3
+MnuTopLine = GETROWS() - 3
 DrawBaseScreen()
 
 
@@ -110,9 +111,20 @@ SUB DrawBaseScreen()
     COLOR(cCOLOR_CYAN,cCOLOR_BLUE)
     PrintXY(0, 0,  "STREE V0.1.0", LINECOLOR)   
     PrintXY(0, 60, strPadR("12/11/2025  8:34 PM",20), LINECOLOR)  '--- date/time placeholder TODO`
-    BOX(1, 0, 56, 38, LINECOLOR)
-    BOX(1, 56, 23, 55, LINECOLOR)
-    BOX(38, 0, 56, 18, LINECOLOR)
+    '--- XTree style boxes
+    'Box(1, 0, 56, 38, LINECOLOR)
+    'Box(1, 56, 23, 55, LINECOLOR)
+    'Box(38, 0, 56, 18, LINECOLOR)
+    '--- Norton Commander style boxes
+    Box(1, 0, 40, 3, LINECOLOR)
+    Box(1, 40, 39, 3, LINECOLOR)
+    Box(3, 0, 40, GETROWS()-6, LINECOLOR)
+    Box(3, 40, 39,GETROWS()-6, LINECOLOR)
+    PlotXY(1,GETCOLS()/2, cTDOWN, LINECOLOR)
+    PlotXY(3,GETCOLS()/2, cINTERSECT, LINECOLOR)
+    PlotXY(3,0 , cSIDE_LEFT, LINECOLOR)        
+    PlotXY(3,GETCOLS()-1, cSIDE_RIGHT, LINECOLOR)        
+    PlotXY(GETROWS()-4,40, cTUP, LINECOLOR)        
 END SUB
 
 
@@ -129,6 +141,7 @@ SUB InitArrays()
     NEXT i  
     FOR i = 0 to cMAX_FILE
         files$(i) = tmp0$
+        files_tagged$(i) = " "
     NEXT i
     cntDirs = 0 : cntFiles = 0
 END SUB
@@ -137,12 +150,10 @@ SUB EnvSave()
    '--- save environment variables here
    ' TODO : need to save current txt  bg color
     DIM EnvScrnMode : DIM EnvCharSet
-    DIM CurRows : DIM CurCols
     EnvScrnMode = CURSCREENMODE
     EnvCharSet  = PEEK($372)        '--- CHARSET 
     SCREEN 0                        '--- text mode 80COL 
     ENTERISO : SETCHARSET 7
-    CurRows = GETROWS() : CurCols = GETCOLS()  
 END SUB 
 SUB EnvRestore()
     '--- restore environment variables
