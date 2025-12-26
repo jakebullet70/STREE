@@ -33,8 +33,8 @@ SUB MENU_DRAW_CLEAR()
     'for j = MnuTopLine to (MnuTopLine + 2) '--- FAILS
     'for j = 57 to 59 '-- WORKS
     POKE 903,65	 : '--- CHANGES THE ROW SIZE SO THE LAST CHAR DOES NOT SCROLL THE SCREEN
-    tmp0$ = RPT$(" ",80)
-    FOR j = 57 TO 59
+    tmp0$ = RPT$(" ",GETCOLS())
+    FOR j = (GETROWS() - 3) TO (GETROWS() - 1)
         LOCATE j,0 : PRINT tmp0$;
     NEXT 
     POKE 903,GETROWS()	 : '--- RESTORE THE ROW SIZE
