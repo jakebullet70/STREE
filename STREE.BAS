@@ -116,15 +116,15 @@ SUB DrawBaseScreen()
     'Box(1, 56, 23, 55, LINECOLOR)
     'Box(38, 0, 56, 18, LINECOLOR)
     '--- Norton Commander style boxes
-    Box(1, 0, 40, 3, LINECOLOR)
-    Box(1, 40, 39, 3, LINECOLOR)
-    Box(3, 0, 40, GETROWS()-6, LINECOLOR)
-    Box(3, 40, 39,GETROWS()-6, LINECOLOR)
+    Box(1, 0, GETCOLS()/2, 3, LINECOLOR)
+    Box(1, GETCOLS()/2, 39, 3, LINECOLOR)
+    Box(3, 0, GETCOLS()/2, GETROWS()-6, LINECOLOR)
+    Box(3, GETCOLS()/2, 39,GETROWS()-6, LINECOLOR)
     PlotXY(1,GETCOLS()/2, cTDOWN, LINECOLOR)
     PlotXY(3,GETCOLS()/2, cINTERSECT, LINECOLOR)
     PlotXY(3,0 , cSIDE_LEFT, LINECOLOR)        
     PlotXY(3,GETCOLS()-1, cSIDE_RIGHT, LINECOLOR)        
-    PlotXY(GETROWS()-4,40, cTUP, LINECOLOR)        
+    PlotXY(GETROWS()-4,GETCOLS()/2, cTUP, LINECOLOR)        
 END SUB
 
 
