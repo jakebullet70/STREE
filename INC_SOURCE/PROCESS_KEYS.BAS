@@ -37,7 +37,7 @@ SUB PROMPT_RENAME_DIR()
     PrintXY(MnuTopLine  ,0 ,"RENAME sub-directory:",TXTCOLOR)
     PrintXY(MnuTopLine+1,18,"to:",TXTCOLOR)
     PrintXY(MnuTopLine+2, 0,"Enter new name         TAB Change case  UP History  CR Ok  ESC Cancel",TXTCOLOR)
-    'PrintXY(MnuTopLine+1,32,"Y",HIGHCOLOR)
+    PrintXY(MnuTopLine+2,23,"TAB",HIGHCOLOR)
     'PrintXY(MnuTopLine+1,37,"ESC",HIGHCOLOR) 
     GetSingleKey() 
 END SUB
