@@ -26,10 +26,13 @@ IsDirSelected = true
 
 CONST cMAX_FILE = 249
 CONST cMAX_DIR = 59
-CONST cMAX_PATH_LEN = 96
-DIM cntDirs : DIM cntFiles                  '--- file/directory vars
-DIM dir$(cMAX_DIR) : DIM files$(cMAX_FILE)
-DIM files_tagged$(cMAX_FILE)  '--- file and directory arrays   
+CONST cMAX_PATH_LEN = 46
+DIM cntDirs1 : DIM cntFiles1  
+DIM cntDirs2 : DIM cntFiles2 '--- file/directory vars
+DIM dir1$(cMAX_DIR) : DIM files1$(cMAX_FILE)
+DIM files_tagged1$(cMAX_FILE)  '--- file and directory arrays   
+DIM dir2$(cMAX_DIR) : DIM files2$(cMAX_FILE)
+DIM files_tagged2$(cMAX_FILE)  '--- file and directory arrays   
 '--- NxtBasic has 80k of string memory for dynamic allocation
 
 
@@ -137,13 +140,16 @@ END SUB
 SUB InitArrays()
     tmp0$ = RPT$(" ",cMAX_PATH_LEN)
     FOR i = 0 to cMAX_DIR
-        dir$(i) = tmp0$
+        dir1$(i) = tmp0$
+        dir2$(i) = tmp0$
     NEXT i  
     FOR i = 0 to cMAX_FILE
-        files$(i) = tmp0$
-        files_tagged$(i) = " "
+        files1$(i) = tmp0$
+        files_tagged1$(i) = " "
+        files2$(i) = tmp0$
+        files_tagged2$(i) = " "
     NEXT i
-    cntDirs = 0 : cntFiles = 0
+    cntDirs1 = 0 : cntFiles1 = 0 : cntDirs2 = 0 : cntFiles2 = 0
 END SUB
 
 SUB EnvSave() 
