@@ -39,7 +39,41 @@ SUB PROMPT_RENAME_DIR()
     PrintXY(MnuTopLine+2, 0,"Enter new name         TAB Change case  UP History  CR Ok  ESC Cancel",TXTCOLOR)
     PrintXY(MnuTopLine+2,23,"TAB",HIGHCOLOR)
     'PrintXY(MnuTopLine+1,37,"ESC",HIGHCOLOR) 
-    GetSingleKey() 
+    t$="FileName.txt"
+    EditText(MnuTopLine+1,18-len(t$),32,t$)
+END SUB
+
+SUB EditText(x9,y9,length9,InputText$)
+    '-- EDIT TEXT AT X,Y for length chars with prompt prompt$
+    DIM CurLocation : CurLocation = 0
+    DO WHILE true   
+        PrintXY(x9,y9,InputText$ + RPT$(" ",length9 - LEN(InputText$)),TXTCOLOR)
+        LOCATE x9, y9 + CurLocation
+        'PlotXY(x9 + LEN(InputText$) + CurLocation, y9, ASC("_"), HIGHCOLOR)
+        GetSingleKeyBlink()    
+        IF ASC(MenuPrompt$) = cKEY_ENTER THEN
+            EXIT LOOP
+        ELSEIF ASC(MenuPrompt$) = cKEY_ESC THEN
+            InputText$ = ""
+            EXIT LOOP
+        ELSEIF ASC(MenuPrompt$) = 8 THEN '--- BACKSPACE
+            IF CurLocation > 0 THEN
+                InputText$ = LEFT$(InputText$, LEN(InputText$)-1)
+                CurLocation = CurLocation - 1
+            END IF
+        ELSEIF MenuPrompt$ = CHR$(157) THEN '--- LEFT ARROW
+            IF CurLocation > 0 THEN
+                CurLocation = CurLocation - 1
+            END IF
+        ELSEIF MenuPrompt$ = CHR$(29) THEN '--- RIGHT ARROW
+            IF CurLocation < LEN(InputText$) THEN
+                CurLocation = CurLocation + 1
+            END IF
+        ELSEIF LEN(InputText$) < length THEN
+            InputText$ = InputText$ + MenuPrompt$
+            CurLocation = CurLocation + 1
+        END IF
+    LOOP
 END SUB
 
 SUB PROMPT_DELETE_DIR()
@@ -102,7 +136,20 @@ SUB GetSingleKey()
     LOOP
 END SUB
 
-
+SUB GetSingleKeyBlink() 
+    '--- RETURNS THE PRESSED KEY IN MenuPrompt$
+    '--- WITH CURSOR BLINKING    
+    DO While true
+        CursorEnable()
+        SLEEP 15
+        CursorDisable()
+        MenuPrompt$ = Get
+        IF MenuPrompt$ <> "" THEN 
+            MenuPrompt$ = UCASE$(MenuPrompt$)
+            EXIT LOOP
+        END IF
+    LOOP
+END SUB
 
 
 ' Keyboard scancode diagram for Commander X16
