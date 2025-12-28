@@ -11,7 +11,7 @@
 
 '--- OS CONSTANTS
 CONST CHROUT = $FFD2   '--- OS Char out routine
-'CONST cOS_BUILD$' = "2024-06-10"  '--- OS BUILD DATE STRING  
+
 CONST cKEY_ESC = 27
 CONST cKEY_ENTER = 13
 CONST cKEY_BACKSPACE = 20
@@ -24,25 +24,19 @@ CONST cEDITOR_UCASE_NO = 0
 
 SUB DEBUG_STRING(dmsg$)
     DIM drow : DIM dcol
-    drow = CURROW()
-    dcol = CURCOL()
-    LOCATE 0,0
-    PRINT RPT$(" ",GETCOLS());
-    LOCATE 0,0
-    PRINT dmsg$;
+    drow = CURROW() : dcol = CURCOL()
+    LOCATE 0,0 : PRINT RPT$(" ",GETCOLS());
+    LOCATE 0,0 : PRINT dmsg$;
     LOCATE drow,dcol
 END SUB 
 
-
-
-
-'--- OS Crap
-SUB CursorEnable()
-    LDA 20 : LDX 0 : SYS $FEAB
-END SUB
-SUB CursorDisable()
-    LDA 20 : LDX 1 : SYS $FEAB
-END SUB
+' '--- OS Crap
+' SUB CursorEnable()
+'     LDA 20 : LDX 0 : SYS $FEAB
+' END SUB
+' SUB CursorDisable()
+'     LDA 20 : LDX 1 : SYS $FEAB
+' END SUB
 
 
 
@@ -118,9 +112,9 @@ SUB GetSingleKey(ForceUCASE,BlinkCursor)
     MenuPrompt$ = ""
     DO WHILE True
         IF BlinkCursor = cEDITOR_BLINK_CURSOR_YES THEN
-            CursorEnable()
+            LDA 20 : LDX 0 : SYS $FEAB '--- CursorEnable()
             SLEEP 20
-            CursorDisable()
+            LDA 20 : LDX 1 : SYS $FEAB '--- CursorDisable()
         ELSE
             SLEEP 20
         END IF
