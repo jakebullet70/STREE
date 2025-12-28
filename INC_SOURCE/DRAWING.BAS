@@ -6,7 +6,7 @@
 ' sadLogic / Steve De George SR. / Steve De George JR
 ' Compile with nxtBasic: https://github.com/unartic/nxtBasic   Windows - CRLF
 '-----------------------------------------------------------------------------------
-
+'#INCLUDE "OS.BAS"
 
 ' Corners and sides (PETSCII codes)
 ' CONST TOPLEFT = 112  ' Top-Left
@@ -109,20 +109,3 @@ END SUB
 SUB LINE_HORIZONTAL(x0, y0, length, clr0)
     PrintXY(x0, y0, RPT$(CHR$(cHORIZONTAL), length), clr0)
 END SUB
-
-
-' TODO needs to be made into ASM for speed - Andy!
-' TODO needs to be made into ASM for speed - Andy!
-
-'--- plot a single character at x,y by ascii value with color
-SUB PlotXY(row1,col1,s1,clr1) 
-    ' TODO needs to be made into ASM for speed - Andy!  TODO  0,0 BASED
-    PrintXY(row1,col1,CHR$(s1),clr1)
-END SUB
-'--- print a string at x,y with color
-SUB PrintXY(row2,col2,tmp0$,clr2)
-    ' TODO needs to be made into ASM for speed - Andy!  TODO 0,0 BASED
-    LOCATE row2,col2 : ' row, col
-    COLOR clr2 : PRINT tmp0$;
-END SUB
-
