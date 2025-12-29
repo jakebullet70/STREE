@@ -27,6 +27,7 @@ IsDirSelected = true
 CONST cMAX_ITEMS = 199
 CONST cMAX_PATH_LEN = 90
 DIM cntDirs1 : DIM cntFiles1 : DIM cntDirs2 : DIM cntFiles2 '--- file/directory counts for each panel
+DIM CurrDir1$ : DIM CurrDir2$ '--- current directory strings for each panel
 DIM Items1$(cMAX_ITEMS) : DIM Items2$(cMAX_ITEMS) '--- file/directory name arrays for each panel
 DIM Items_tagged1$(cMAX_ITEMS) : DIM Items_tagged2$(cMAX_ITEMS) '--- tagged items arrays for each panel
 
@@ -35,7 +36,11 @@ DIM Items_tagged1$(cMAX_ITEMS) : DIM Items_tagged2$(cMAX_ITEMS) '--- tagged item
 EnvSave()
 PRINT "STREE - FILE & DIRECTORY MANAGER FOR THE CX16 - V0.1.0"
 PRINT "STARTING ... "
-InitArrays() : ReadItems(1) : DupePanel1To2()
+
+ShowHidden = false '--- default to not showing hidden files
+CurrDir1$ = CurDir$()
+InitArrays()
+ReadItems(1) : DupePanel1To2()
 MnuTopLine = GETROWS() - 3
 DrawBaseScreen()
 
@@ -131,47 +136,68 @@ SUB DupePanel1To2()
     NEXT i
     cntDirs2 = cntDirs1
     cntFiles2 = cntFiles1
+    CurrDir2$ = CurrDir1$
 END SUB
 
 SUB ReadItems(PanelNum)
+    DIM tmpCDir$ : DIM curListCount : DIM nNumItems
+    
+    IF PanelNum = 1 THEN '--- if '/' then ROOT
+        tmpCDir$ = CurrDir1$
+    ELSE
+        tmpCDir$ = CurrDir2$
+    END IF
+
     nNumItems = DIRLIST("*","*",LIST_DIRS)  
+    curListCount = 0
+    IF LEN(tmpCDir$) > 1 THEN
+        IF PanelNum = 1 THEN
+            Items1$(curListCount) = "/.." '--- parent dir entry
+        ELSE
+            Items2$(curListCount) = "/.." '--- parent dir entry
+        END IF
+        curListCount = curListCount + 1
+    END IF
+
     FOR j = 0 TO nNumItems - 1
         tmp0$ = DIRITEM()
         '--- HostFS does not return the . and .. items. hardware/sd card does
-        if tmp0$ <> "." AND tmp0$ <> ".." then    
+        if tmp0$ <> "." AND tmp0$ <> ".." THEN    
             'fname$ = FixUpChars(fname$)   '--- lcase$ or PETSCII or ??
             IF LEN(tmp0$) = 0 THEN CONTINUE
+            IF ShowHidden = false AND LEFT$(tmp0$,1) = "." THEN CONTINUE
             IF PanelNum = 1 THEN
-                Items1$(j) = "[" + tmp0$ + "]"
+                Items1$(curListCount) = "[" + tmp0$ + "]"
             ELSE
-                Items2$(j) = "[" + tmp0$ + "]"
+                Items2$(curListCount) = "[" + tmp0$ + "]"
             END IF
         END IF
+        curListCount = curListCount + 1
     NEXT
+    CLOSEDIRLIST()
     IF PanelNum = 1 THEN
         cntDirs1 = nNumItems
     ELSE
         cntDirs2 = nNumItems
     END IF
-    CLOSEDIRLIST()
-
-    nOffset = nNumItems + 1
+    
     nNumItems = DIRLIST("*","*",LIST_FILES) '--- files now
     FOR j = 0 to nNumItems - 1
         tmp0$ = DIRITEM()
         IF LEN(tmp0$) = 0 THEN CONTINUE
+        IF ShowHidden = false AND LEFT$(tmp0$,1) = "." THEN CONTINUE
         IF PanelNum = 1 THEN
-            Items1$(nOffset + j) = tmp0$ 
+            Items1$(curListCount + j) = tmp0$ 
         ELSE
-            Items2$(nOffset + j) = tmp0$ 
+            Items2$(curListCount + j) = tmp0$ 
         END IF
     NEXT 
+    CLOSELIST()
     IF PanelNum = 1 THEN
         cntFiles1 = nNumItems
     ELSE
         cntFiles2 = nNumItems
     END IF
-    CLOSELIST()
 
 END SUB
 
