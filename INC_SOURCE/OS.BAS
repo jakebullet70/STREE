@@ -112,9 +112,9 @@ SUB GetSingleKey(ForceUCASE,BlinkCursor)
     MenuPrompt$ = ""
     DO WHILE True
         IF BlinkCursor = cEDITOR_BLINK_CURSOR_YES THEN
-            LDA 20 : LDX 0 : SYS $FEAB '--- CursorEnable()
+            LDA 20 : LDX 0 : SYS $FEAB '--- CursorEnable
             SLEEP 20
-            LDA 20 : LDX 1 : SYS $FEAB '--- CursorDisable()
+            LDA 20 : LDX 1 : SYS $FEAB '--- CursorDisable
         ELSE
             SLEEP 20
         END IF
