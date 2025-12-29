@@ -11,6 +11,8 @@ CONST cMNU_CTRL = 2
 CONST cMNU_BASE_DIR = 3
 CONST cMNU_BASE_FILE = 4
 
+'DIM DEBUG_COUNTER : DEBUG_COUNTER = 0
+
 #INCLUDE "INC_SOURCE\COLORS.BAS"
 DIM MnuTopLine : DIM curMenu            '--- menu vars 
 
@@ -31,6 +33,19 @@ DIM CurrDir1$ : DIM CurrDir2$ '--- current directory strings for each panel
 DIM Items1$(cMAX_ITEMS) : DIM Items2$(cMAX_ITEMS) '--- file/directory name arrays for each panel
 DIM Items_tagged1$(cMAX_ITEMS) : DIM Items_tagged2$(cMAX_ITEMS) '--- tagged items arrays for each panel
 
+CONST cCURRENT_PANEL_1 = 1
+CONST cCURRENT_PANEL_2 = 2
+CurrentPanel = cCURRENT_PANEL_1
+
+'--- Selection and navigation state
+DIM SelIdx1 : DIM SelIdx2 : DIM RowOffset1 : DIM RowOffset2
+
+'--- Key scancodes we handle directly here (fallback/variants included)
+CONST cKEY_DOWN = 17
+CONST cKEY_UP   = 145
+CONST cKEY_LEFT = 157
+CONST cKEY_RIGHT = 29
+CONST cKEY_TAB = 9
 
 '--------------------------- START -----------------------------
 EnvSave()
@@ -43,11 +58,12 @@ InitArrays()
 ReadItems(1) : DupePanel1To2()
 MnuTopLine = GETROWS() - 3
 DrawBaseScreen()
-
+DrawPanels()
 
 '--- drop into the keyloop
 
 KeyLoop:
+    'SLEEP 5
     key$ = Get
     KeysCTRL = KEYDOWN($3A) OR KEYDOWN($40)
     KeysALT  = KEYDOWN($3C) OR KEYDOWN($3E)
@@ -75,8 +91,7 @@ KeyLoop:
             END IF
         END IF
     END IF
-    SLEEP 10
-
+    
     IF key$ <> "" THEN
         Key$ = UCASE$(key$)  
         '--- KeysValid$ holds valid keys for the current menu
@@ -92,6 +107,22 @@ KeyLoop:
             END IF
         ELSE
             '--- ARROW KEYS - TAB
+            DIM sc : sc = ASC(Key$)
+            IF sc = cKEY_DOWN THEN
+                IF CurrentPanel = cCURRENT_PANEL_1 THEN
+                    MoveSelectionDown(1)
+                ELSE
+                    MoveSelectionDown(2)
+                END IF
+            ELSEIF sc = cKEY_UP THEN
+                IF CurrentPanel = cCURRENT_PANEL_1 THEN
+                    MoveSelectionUp(1)
+                ELSE
+                    MoveSelectionUp(2)
+                END IF
+            ELSEIF sc = cKEY_TAB THEN
+                SwitchPanel()
+            END IF
         END IF
     END IF 
 
@@ -210,8 +241,185 @@ SUB InitArrays()
         Items_tagged2$(i) = " "
     NEXT i
     cntDirs1 = 0 : cntFiles1 = 0 : cntDirs2 = 0 : cntFiles2 = 0
+    '--- initialize selection state
+    SelIdx1 = 0 : SelIdx2 = 0
+    RowOffset1 = 0 : RowOffset2 = 0
 END SUB
 
+
+'================ Navigation helpers =====================================
+SUB SwitchPanel()
+    IF CurrentPanel = cCURRENT_PANEL_1 THEN
+        CurrentPanel = cCURRENT_PANEL_2
+    ELSE
+        CurrentPanel = cCURRENT_PANEL_1
+    END IF
+    '--- Redraw menu/footer for new panel
+    'MENU_DRAW_BASE_DIR()
+    DrawPanels()
+END SUB
+
+SUB MoveSelectionUp(PanelNum)
+    DIM total
+    IF PanelNum = 1 THEN
+        total = cntDirs1 + cntFiles1
+        IF LEN(CurrDir1$) > 1 THEN total = total + 1
+        IF total = 0 THEN SelIdx1 = 0 : GOTO msu_end
+        SelIdx1 = SelIdx1 - 1
+        IF SelIdx1 < 0 THEN SelIdx1 = 0
+        IF SelIdx1 > total - 1 THEN SelIdx1 = total - 1
+    ELSE
+        total = cntDirs2 + cntFiles2
+        IF LEN(CurrDir2$) > 1 THEN total = total + 1
+        IF total = 0 THEN SelIdx2 = 0 : GOTO msu_end
+        SelIdx2 = SelIdx2 - 1
+        IF SelIdx2 < 0 THEN SelIdx2 = 0
+        IF SelIdx2 > total - 1 THEN SelIdx2 = total - 1
+    END IF
+msu_end:
+    '--- ensure selection visible
+    EnsureSelectionVisible(PanelNum)
+    '--- refresh UI
+    DrawPanel(PanelNum)
+END SUB
+
+SUB MoveSelectionDown(PanelNum)
+    DIM total
+    IF PanelNum = 1 THEN
+        total = cntDirs1 + cntFiles1
+        IF LEN(CurrDir1$) > 1 THEN total = total + 1
+        IF total = 0 THEN SelIdx1 = 0 : GOTO msd_end
+        SelIdx1 = SelIdx1 + 1
+        IF SelIdx1 > total - 1 THEN SelIdx1 = total - 1
+    ELSE
+        total = cntDirs2 + cntFiles2
+        IF LEN(CurrDir2$) > 1 THEN total = total + 1
+        IF total = 0 THEN SelIdx2 = 0 : GOTO msd_end
+        SelIdx2 = SelIdx2 + 1
+        IF SelIdx2 > total - 1 THEN SelIdx2 = total - 1
+    END IF
+msd_end:
+    '--- ensure selection visible
+    EnsureSelectionVisible(PanelNum)
+    '--- refresh UI
+    DrawPanel(PanelNum)
+END SUB
+
+
+
+'================= Panel rendering ======================================
+SUB DrawPanels()
+    'DEBUG_STRING("DRAW PANELS CALL:" + STR$(DEBUG_COUNTER)) 
+    DrawPanel(1)
+    DrawPanel(2)
+END SUB
+
+SUB DrawPanel(PanelNum)
+    'DEBUG_COUNTER = DEBUG_COUNTER + 1
+
+    DIM visRows : DIM startRow : DIM startCol : DIM width  
+    DIM iz : DIM r : DIM idx : DIM text$ : DIM hdr$ : DIM headerRow : DIM total
+    visRows = GETROWS() - 8 ' space for borders and menu
+    startRow = 4
+    width = (GETCOLS() / 2) - 4
+    IF PanelNum = 1 THEN
+        startCol = 2
+        total = cntDirs1 + cntFiles1
+        IF LEN(CurrDir1$) > 1 THEN total = total + 1
+    ELSE
+        startCol = (GETCOLS() / 2) + 2
+        total = cntDirs2 + cntFiles2
+        IF LEN(CurrDir2$) > 1 THEN total = total + 1
+    END IF
+
+    '--- draw panel header (current dir) with active/inactive color
+    DrawPanelHeader(PanelNum)
+
+    FOR iz = 0 TO visRows - 1
+        r = startRow + iz
+        IF PanelNum = 1 THEN
+            idx = RowOffset1 + iz
+            IF idx >= total THEN
+                text$ = RPT$(" ", width)
+            ELSE
+                text$ = Items1$(idx)
+                text$ = LEFT$(text$, width) + RPT$(" ", width - LEN(LEFT$(text$, width)))
+            END IF
+        ELSE
+            idx = RowOffset2 + iz
+            IF idx >= total THEN
+                text$ = RPT$(" ", width)
+            ELSE
+                text$ = Items2$(idx)
+                text$ = LEFT$(text$, width) + RPT$(" ", width - LEN(LEFT$(text$, width)))
+            END IF
+        END IF
+
+        '--- highlight selected item
+        IF PanelNum = 1 AND idx = SelIdx1 THEN
+            PrintXYColor(r, startCol, text$, cCOLOR_BLUE, cCOLOR_WHITE)
+        ELSEIF PanelNum = 2 AND idx = SelIdx2 THEN
+            PrintXYColor(r, startCol, text$, cCOLOR_BLUE, cCOLOR_WHITE)
+        ELSE
+            PrintXYColor(r, startCol, text$, cCOLOR_LIGHT_GRAY, cCOLOR_BLUE)
+        END IF
+    NEXT 
+END SUB
+
+SUB DrawPanelHeader(PanelNum)
+    DIM headerRow 
+    DIM startRow  
+    DIM startCol  
+    DIM width 
+    DIM hdr$
+    startRow = 4
+    width = (GETCOLS() / 2) - 4
+    IF PanelNum = 1 THEN
+        startCol = 2
+        hdr$ = CurrDir1$
+    ELSE
+        startCol = (GETCOLS() / 2) + 2
+        hdr$ = CurrDir2$
+    END IF
+
+    IF LEN(hdr$) = 0 THEN hdr$ = "/"
+    headerRow = startRow - 2
+
+    '--- build header string, trimmed/padded to width
+    hdr$ = hdr$ + RPT$(" ", width - LEN(hdr$))
+
+    IF PanelNum = CurrentPanel THEN
+        'PrintXYColor(headerRow, startCol, hdr$, cCOLOR_BLUE, cCOLOR_WHITE) ' BOOM
+    ELSE
+        'PrintXYColor(headerRow, startCol, hdr$, cCOLOR_WHITE, cCOLOR_BLUE)  ' BOOM
+    END IF
+
+END SUB
+
+SUB EnsureSelectionVisible(PanelNum)
+    DIM visRows : DIM maxOffset : DIM total
+    visRows = GETROWS() - 8
+    IF PanelNum = 1 THEN
+        total = cntDirs1 + cntFiles1
+        IF LEN(CurrDir1$) > 1 THEN total = total + 1
+    ELSE
+        total = cntDirs2 + cntFiles2
+        IF LEN(CurrDir2$) > 1 THEN total = total + 1
+    END IF
+    maxOffset = total - visRows
+    IF maxOffset < 0 THEN maxOffset = 0
+    IF PanelNum = 1 THEN
+        IF SelIdx1 < RowOffset1 THEN RowOffset1 = SelIdx1
+        IF SelIdx1 >= RowOffset1 + visRows THEN RowOffset1 = SelIdx1 - (visRows - 1)
+        IF RowOffset1 < 0 THEN RowOffset1 = 0
+        IF RowOffset1 > maxOffset THEN RowOffset1 = maxOffset
+    ELSE
+        IF SelIdx2 < RowOffset2 THEN RowOffset2 = SelIdx2
+        IF SelIdx2 >= RowOffset2 + visRows THEN RowOffset2 = SelIdx2 - (visRows - 1)
+        IF RowOffset2 < 0 THEN RowOffset2 = 0
+        IF RowOffset2 > maxOffset THEN RowOffset2 = maxOffset
+    END IF
+END SUB
 
 #INCLUDE "INC_SOURCE\OS.BAS"
 #INCLUDE "INC_SOURCE\DRAWING.BAS"
