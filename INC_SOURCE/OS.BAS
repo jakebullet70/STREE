@@ -68,11 +68,17 @@ SUB PlotXY(row1,col1,s1,clr1)
 END SUB
 
 '--- print a string at x,y with color
-SUB PrintXY(row2,col2,tmp0$,clr2)
+SUB PrintXY(row2,col2,tmpb$,clr2)
     ' TODO needs to be made into ASM for speed - Andy!  TODO 0,0 BASED
     LOCATE row2,col2 : ' row, col
-    COLOR clr2 : PRINT tmp0$;
-    'LDA tmp0$ : SYS CHROUT
+    COLOR clr2 : PRINT tmpb$;
+END SUB
+
+'--- Print with explicit foreground and background colors
+SUB PrintXYColor(row3,col3,tmpA$,fgColor3,bgColor3)
+    LOCATE row3,col3
+    COLOR fgColor3, bgColor3
+    PRINT tmpA$;
 END SUB
 
 
