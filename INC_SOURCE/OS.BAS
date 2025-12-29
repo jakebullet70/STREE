@@ -39,6 +39,22 @@ END SUB
 ' END SUB
 
 
+SUB EnvSave() 
+   '--- save environment variables here
+   ' TODO : need to save current txt  bg color
+    DIM EnvScrnMode : DIM EnvCharSet
+    EnvScrnMode = CURSCREENMODE
+    EnvCharSet  = PEEK($372)        '--- CHARSET 
+    SCREEN 0                        '--- text mode 80COL 
+    ENTERISO : SETCHARSET 7
+END SUB 
+SUB EnvRestore()
+    '--- restore environment variables
+    EXITISO
+    SCREEN EnvScrnMode
+    SETCHARSET EnvCharSet
+    PRINT "HAVE A NICE DAY!"
+END SUB 
 
 ' TODO needs to be made into ASM for speed - Andy!
 ' TODO needs to be made into ASM for speed - Andy!

@@ -24,24 +24,18 @@ DIM MenuPrompt$ : MenuPrompt$ = tmp0$       '--- menu prompt key input var
 DIM IsDirSelected                           '--- selection vars - files / directories
 IsDirSelected = true
 
-CONST cMAX_FILE = 249
-CONST cMAX_DIR = 59
-CONST cMAX_PATH_LEN = 46
-DIM cntDirs1 : DIM cntFiles1  
-DIM cntDirs2 : DIM cntFiles2 '--- file/directory vars
-DIM dir1$(cMAX_DIR) : DIM files1$(cMAX_FILE)
-DIM files_tagged1$(cMAX_FILE)  '--- file and directory arrays   
-DIM dir2$(cMAX_DIR) : DIM files2$(cMAX_FILE)
-DIM files_tagged2$(cMAX_FILE)  '--- file and directory arrays   
-'--- NxtBasic has 80k of string memory for dynamic allocation
+CONST cMAX_ITEMS = 199
+CONST cMAX_PATH_LEN = 90
+DIM cntDirs1 : DIM cntFiles1 : DIM cntDirs2 : DIM cntFiles2 '--- file/directory counts for each panel
+DIM Items1$(cMAX_ITEMS) : DIM Items2$(cMAX_ITEMS) '--- file/directory name arrays for each panel
+DIM Items_tagged1$(cMAX_ITEMS) : DIM Items_tagged2$(cMAX_ITEMS) '--- tagged items arrays for each panel
 
 
 '--------------------------- START -----------------------------
 EnvSave()
-PRINT "STREE - File and Directory Viewer for Commander X16 - V0.1.0"
-PRINT "Starting ... "
-InitArrays() 
-ReadDIR() : ReadFiles() 
+PRINT "STREE - FILE & DIRECTORY MANAGER FOR THE CX16 - V0.1.0"
+PRINT "STARTING ... "
+InitArrays() : ReadItems(1) : DupePanel1To2()
 MnuTopLine = GETROWS() - 3
 DrawBaseScreen()
 
@@ -130,44 +124,68 @@ SUB DrawBaseScreen()
     PlotXY(GETROWS()-4,GETCOLS()/2, cTUP, LINECOLOR)        
 END SUB
 
-
-SUB ReadDIR()
+SUB DupePanel1To2()
+    FOR i = 0 to cMAX_ITEMS - 1
+        Items2$(i) = Items1$(i)
+        'Items_tagged2$(i) = Items_tagged1$(i)
+    NEXT i
+    cntDirs2 = cntDirs1
+    cntFiles2 = cntFiles1
 END SUB
 
-SUB ReadFiles()
+SUB ReadItems(PanelNum)
+    nNumItems = DIRLIST("*","*",LIST_DIRS)  
+    FOR j = 0 TO nNumItems - 1
+        tmp0$ = DIRITEM()
+        '--- HostFS does not return the . and .. items. hardware/sd card does
+        if tmp0$ <> "." AND tmp0$ <> ".." then    
+            'fname$ = FixUpChars(fname$)   '--- lcase$ or PETSCII or ??
+            IF LEN(tmp0$) = 0 THEN CONTINUE
+            IF PanelNum = 1 THEN
+                Items1$(j) = "[" + tmp0$ + "]"
+            ELSE
+                Items2$(j) = "[" + tmp0$ + "]"
+            END IF
+        END IF
+    NEXT
+    IF PanelNum = 1 THEN
+        cntDirs1 = nNumItems
+    ELSE
+        cntDirs2 = nNumItems
+    END IF
+    CLOSEDIRLIST()
+
+    nOffset = nNumItems + 1
+    nNumItems = DIRLIST("*","*",LIST_FILES) '--- files now
+    FOR j = 0 to nNumItems - 1
+        tmp0$ = DIRITEM()
+        IF LEN(tmp0$) = 0 THEN CONTINUE
+        IF PanelNum = 1 THEN
+            Items1$(nOffset + j) = tmp0$ 
+        ELSE
+            Items2$(nOffset + j) = tmp0$ 
+        END IF
+    NEXT 
+    IF PanelNum = 1 THEN
+        cntFiles1 = nNumItems
+    ELSE
+        cntFiles2 = nNumItems
+    END IF
+    CLOSELIST()
+
 END SUB
 
 SUB InitArrays()
-    tmp0$ = RPT$(" ",cMAX_PATH_LEN)
-    FOR i = 0 to cMAX_DIR
-        dir1$(i) = tmp0$
-        dir2$(i) = tmp0$
-    NEXT i  
-    FOR i = 0 to cMAX_FILE
-        files1$(i) = tmp0$
-        files_tagged1$(i) = " "
-        files2$(i) = tmp0$
-        files_tagged2$(i) = " "
+    tmp0$ = RPT$(" ",cMAX_PATH_LEN) 
+    FOR i = 0 to cMAX_ITEMS - 1
+        Items1$(i) = tmp0$
+        Items_tagged1$(i) = " "
+        Items2$(i) = tmp0$
+        Items_tagged2$(i) = " "
     NEXT i
     cntDirs1 = 0 : cntFiles1 = 0 : cntDirs2 = 0 : cntFiles2 = 0
 END SUB
 
-SUB EnvSave() 
-   '--- save environment variables here
-   ' TODO : need to save current txt  bg color
-    DIM EnvScrnMode : DIM EnvCharSet
-    EnvScrnMode = CURSCREENMODE
-    EnvCharSet  = PEEK($372)        '--- CHARSET 
-    SCREEN 0                        '--- text mode 80COL 
-    ENTERISO : SETCHARSET 7
-END SUB 
-SUB EnvRestore()
-    '--- restore environment variables
-    EXITISO
-    SCREEN EnvScrnMode
-    SETCHARSET EnvCharSet
-    PRINT "HAVE A NICE DAY!"
-END SUB 
 
 #INCLUDE "INC_SOURCE\OS.BAS"
 #INCLUDE "INC_SOURCE\DRAWING.BAS"
