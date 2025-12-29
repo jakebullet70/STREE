@@ -1,2 +1,2 @@
 # stree
-XTree style file manager for the Commander X16
+XTree inspired file manager for the Commander X16
