@@ -1,29 +1,13 @@
 
+    DIM hdr$
+    
+    width = (GETCOLS() / 2) - 4
+    
+    IF LEN(hdr$) = 0 THEN hdr$ = "/"
 
-PromptKeys()
-' CursorEnable
-' sleep 30
-' CursorDisable   ' blows up into ML monitor here
-END
+    '--- build header string, trimmed/padded to width
+    hdr$ = hdr$ + RPT$(" ", width - LEN(hdr$))
+    color 4, 1
+    Print hdr$
 
-SUB CursorEnable()
-    LDA 20 : LDX 0 : SYS $FEAB
-END SUB
-
-SUB CursorDisable()
-    LDA 20 : LDX 1 : SYS $FEAB
-END SUB 
-
-SUB PromptKeys() 
-    DO While true
-        CursorEnable 
-        SLEEP 20
-        CursorDisable
-
-        MenuPrompt$ = Get
-
-        IF MenuPrompt$ <> "" THEN 
-            EXIT LOOP
-        END IF
-    LOOP
-END SUB
+end

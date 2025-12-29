@@ -39,6 +39,8 @@ CurrentPanel = cCURRENT_PANEL_1
 
 '--- Selection and navigation state
 DIM SelIdx1 : DIM SelIdx2 : DIM RowOffset1 : DIM RowOffset2
+DIM visRows : DIM maxOffset : DIM ttlItems
+
 
 '--- Key scancodes we handle directly here (fallback/variants included)
 CONST cKEY_DOWN = 17
@@ -260,21 +262,21 @@ SUB SwitchPanel()
 END SUB
 
 SUB MoveSelectionUp(PanelNum)
-    DIM total
+    
     IF PanelNum = 1 THEN
-        total = cntDirs1 + cntFiles1
-        IF LEN(CurrDir1$) > 1 THEN total = total + 1
-        IF total = 0 THEN SelIdx1 = 0 : GOTO msu_end
+        ttlItems = cntDirs1 + cntFiles1
+        IF LEN(CurrDir1$) > 1 THEN ttlItems = ttlItems + 1
+        IF ttlItems = 0 THEN SelIdx1 = 0 : GOTO msu_end
         SelIdx1 = SelIdx1 - 1
         IF SelIdx1 < 0 THEN SelIdx1 = 0
-        IF SelIdx1 > total - 1 THEN SelIdx1 = total - 1
+        IF SelIdx1 > ttlItems - 1 THEN SelIdx1 = ttlItems - 1
     ELSE
-        total = cntDirs2 + cntFiles2
-        IF LEN(CurrDir2$) > 1 THEN total = total + 1
-        IF total = 0 THEN SelIdx2 = 0 : GOTO msu_end
+        ttlItems = cntDirs2 + cntFiles2
+        IF LEN(CurrDir2$) > 1 THEN ttlItems = ttlItems + 1
+        IF ttlItems = 0 THEN SelIdx2 = 0 : GOTO msu_end
         SelIdx2 = SelIdx2 - 1
         IF SelIdx2 < 0 THEN SelIdx2 = 0
-        IF SelIdx2 > total - 1 THEN SelIdx2 = total - 1
+        IF SelIdx2 > ttlItems - 1 THEN SelIdx2 = ttlItems - 1
     END IF
 msu_end:
     '--- ensure selection visible
@@ -284,19 +286,19 @@ msu_end:
 END SUB
 
 SUB MoveSelectionDown(PanelNum)
-    DIM total
+    
     IF PanelNum = 1 THEN
-        total = cntDirs1 + cntFiles1
-        IF LEN(CurrDir1$) > 1 THEN total = total + 1
-        IF total = 0 THEN SelIdx1 = 0 : GOTO msd_end
+        ttlItems = cntDirs1 + cntFiles1
+        IF LEN(CurrDir1$) > 1 THEN ttlItems = ttlItems + 1
+        IF ttlItems = 0 THEN SelIdx1 = 0 : GOTO msd_end
         SelIdx1 = SelIdx1 + 1
-        IF SelIdx1 > total - 1 THEN SelIdx1 = total - 1
+        IF SelIdx1 > ttlItems - 1 THEN SelIdx1 = ttlItems - 1
     ELSE
-        total = cntDirs2 + cntFiles2
-        IF LEN(CurrDir2$) > 1 THEN total = total + 1
-        IF total = 0 THEN SelIdx2 = 0 : GOTO msd_end
+        ttlItems = cntDirs2 + cntFiles2
+        IF LEN(CurrDir2$) > 1 THEN ttlItems = ttlItems + 1
+        IF ttlItems = 0 THEN SelIdx2 = 0 : GOTO msd_end
         SelIdx2 = SelIdx2 + 1
-        IF SelIdx2 > total - 1 THEN SelIdx2 = total - 1
+        IF SelIdx2 > ttlItems - 1 THEN SelIdx2 = ttlItems - 1
     END IF
 msd_end:
     '--- ensure selection visible
@@ -324,12 +326,12 @@ SUB DrawPanel(PanelNum)
     width = (GETCOLS() / 2) - 4
     IF PanelNum = 1 THEN
         startCol = 2
-        total = cntDirs1 + cntFiles1
-        IF LEN(CurrDir1$) > 1 THEN total = total + 1
+        ttlItems = cntDirs1 + cntFiles1
+        IF LEN(CurrDir1$) > 1 THEN ttlItems = ttlItems + 1
     ELSE
         startCol = (GETCOLS() / 2) + 2
-        total = cntDirs2 + cntFiles2
-        IF LEN(CurrDir2$) > 1 THEN total = total + 1
+        ttlItems = cntDirs2 + cntFiles2
+        IF LEN(CurrDir2$) > 1 THEN ttlItems = ttlItems + 1
     END IF
 
     '--- draw panel header (current dir) with active/inactive color
@@ -339,7 +341,7 @@ SUB DrawPanel(PanelNum)
         r = startRow + iz
         IF PanelNum = 1 THEN
             idx = RowOffset1 + iz
-            IF idx >= total THEN
+            IF idx >= ttlItems THEN
                 text$ = RPT$(" ", width)
             ELSE
                 text$ = Items1$(idx)
@@ -347,7 +349,7 @@ SUB DrawPanel(PanelNum)
             END IF
         ELSE
             idx = RowOffset2 + iz
-            IF idx >= total THEN
+            IF idx >= ttlItems THEN
                 text$ = RPT$(" ", width)
             ELSE
                 text$ = Items2$(idx)
@@ -396,17 +398,16 @@ SUB DrawPanelHeader(PanelNum)
 
 END SUB
 
-SUB EnsureSelectionVisible(PanelNum)
-    DIM visRows : DIM maxOffset : DIM total
+SUB EnsureSelectionVisible(PanelNum)    
     visRows = GETROWS() - 8
     IF PanelNum = 1 THEN
-        total = cntDirs1 + cntFiles1
-        IF LEN(CurrDir1$) > 1 THEN total = total + 1
+        ttlItems = cntDirs1 + cntFiles1
+        IF LEN(CurrDir1$) > 1 THEN ttlItems = ttlItems + 1
     ELSE
-        total = cntDirs2 + cntFiles2
-        IF LEN(CurrDir2$) > 1 THEN total = total + 1
+        ttlItems = cntDirs2 + cntFiles2
+        IF LEN(CurrDir2$) > 1 THEN ttlItems = ttlItems + 1
     END IF
-    maxOffset = total - visRows
+    maxOffset = ttlItems - visRows
     IF maxOffset < 0 THEN maxOffset = 0
     IF PanelNum = 1 THEN
         IF SelIdx1 < RowOffset1 THEN RowOffset1 = SelIdx1
